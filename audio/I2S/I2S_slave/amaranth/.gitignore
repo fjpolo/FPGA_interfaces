@@ -1,0 +1,6 @@
+*.vcd
+*.v
+*.il
+I2S_slave/
+template_bmc/
+template_cover/

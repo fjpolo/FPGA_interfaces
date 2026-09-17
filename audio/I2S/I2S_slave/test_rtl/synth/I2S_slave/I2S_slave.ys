@@ -1,0 +1,59 @@
+# yosys script for I2S_slave.v
+
+# Read the Verilog file
+read_verilog I2S_slave.v
+
+# Synthesize the design
+synth_gowin -top I2S_slave -json I2S_slave.json
+
+# Generate a simple netlist graph (for visualization)
+# This is done every iteration.
+show -prefix maf_iter_01
+
+# Clean up unused cells and wires
+clean
+
+# Second Iteration
+#show -prefix maf_iter_02
+clean
+
+#Third Iteration
+#show -prefix maf_iter_03
+clean
+
+# Fourth Iteration
+#show -prefix maf_iter_04
+clean
+
+# Fifth Iteration
+#show -prefix maf_iter_05
+clean
+
+# Sixth Iteration
+#show -prefix maf_iter_06
+clean
+
+# Seventh Iteration
+#show -prefix maf_iter_07
+clean
+
+# Eighth Iteration
+#show -prefix maf_iter_08
+clean
+
+# Ninth Iteration
+#show -prefix maf_iter_09
+clean
+
+# Tenth Iteration
+#show -prefix maf_iter_10
+clean
+
+# Generate a final netlist graph (after all optimizations)
+#show -prefix maf_final
+
+# Write the synthesized netlist to a file (optional)
+write_verilog template_synth.v
+
+# Print statistics
+stat

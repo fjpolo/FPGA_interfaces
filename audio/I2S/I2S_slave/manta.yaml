@@ -1,0 +1,18 @@
+# Manta Logic Analyzer Configuration Template
+# For more info: https://github.com/fischermoseley/manta
+
+cores:
+  la_core:
+    type: logic_analyzer
+    depth: 1024       # Sample memory depth
+    
+    # Probes to monitor signals in our I2S_slave design
+    probes:
+      i_reset_n: 1
+      i_data: 8
+      o_data: 8
+
+# Configure the transport interface (UART)
+# Pins are connected to the USB-UART bridge of your FPGA board
+uart:
+  baudrate: 115200

@@ -1,0 +1,16 @@
+*.txt
+*.log
+*.vcd
+*.pyc
+*.il
+*.xml
+*_synth.v
+*.vvp
+
+**/database/
+**/tasks/
+**/obj_dir/
+**/sim_build/
+**/__pycache__
+
+
