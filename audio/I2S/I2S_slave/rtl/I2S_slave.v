@@ -154,25 +154,30 @@ module I2S_slave #(
 `ifdef I2S_SLAVE_ENABLE_TX
     // -------------------------------------------------------------------------
     // Block 2: Parallel Master Interface (Host TX Sample Ingest)
-    // Manages host sample handshaking and holding registers for outgoing audio
+    // Manages host sample handshaking and double-buffered holding registers
     // -------------------------------------------------------------------------
     reg [DATA_WIDTH-1:0] tx_l_reg;
     reg [DATA_WIDTH-1:0] tx_r_reg;
+    reg [DATA_WIDTH-1:0] tx_r_active;
 
     always @(posedge i_clk) begin
         if (!i_reset_n) begin
-            tx_l_reg   <= {DATA_WIDTH{1'b0}};
-            tx_r_reg   <= {DATA_WIDTH{1'b0}};
-            o_tx_ready <= 1'b0;
+            tx_l_reg    <= {DATA_WIDTH{1'b0}};
+            tx_r_reg    <= {DATA_WIDTH{1'b0}};
+            tx_r_active <= {DATA_WIDTH{1'b0}};
+            o_tx_ready  <= 1'b0;
         end else begin
-            o_tx_ready <= 1'b0;
-
-            // Request next stereo sample pair at the start of every frame (Left channel)
+            // Ready/Valid Handshake:
+            // Assert o_tx_ready at the start of every frame (WS transition to Left channel)
+            // and capture the Right channel sample for active transmission.
             if (ws_edge && (ws_sync[1] == 1'b0)) begin
-                o_tx_ready <= 1'b1;
+                o_tx_ready  <= 1'b1;
+                tx_r_active <= tx_r_reg;
+            end else if (i_tx_valid && o_tx_ready) begin
+                o_tx_ready  <= 1'b0;
             end
 
-            // Latch new audio samples when valid
+            // Latch new audio samples into holding registers when valid
             if (i_tx_valid && o_tx_ready) begin
                 tx_l_reg <= i_tx_data_l;
                 tx_r_reg <= i_tx_data_r;
@@ -271,7 +276,7 @@ module I2S_slave #(
                 if (ws_sync[1] == 1'b0) begin
                     tx_shift_reg <= tx_l_reg;
                 end else begin
-                    tx_shift_reg <= tx_r_reg;
+                    tx_shift_reg <= tx_r_active;
                 end
             end else if (sck_fall) begin
                 if (tx_bit_cnt < DATA_WIDTH_CONST) begin
