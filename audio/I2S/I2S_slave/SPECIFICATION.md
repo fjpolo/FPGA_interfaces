@@ -60,8 +60,26 @@ SD In  (Slave RX)  ───────[ x ]───[  MSB  ]───[ MSB-1 
 
 ---
 
-## 4. Reference Documents
+## 4. Build-Time IFDEF Configuration & LUT Optimization
+
+To minimize FPGA logic utilization (LUTs, flip-flops, and routing resources), `I2S_slave` provides preprocessor macro controls for unidirectional deployment:
+
+| Macro Definition | Mode | Active Engines | Synthesized Logic |
+| :--- | :--- | :--- | :--- |
+| *(None / Default)* | **Full-Duplex** | Both Receiver (RX) and Transmitter (TX) | Complete dual-channel shift registers, holding registers, synchronizers, and handshakes. |
+| `I2S_SLAVE_RX_ONLY` | **Simplex RX** | Receiver Only | TX holding registers, TX shift register, and TX handshake logic are completely pruned.<br>Outputs `o_sd` and `o_tx_ready` are tied to ground (`1'b0`). |
+| `I2S_SLAVE_TX_ONLY` | **Simplex TX** | Transmitter Only | RX serial shift register, sample buffers (`rx_l_data`, `rx_r_data`), channel tracker (`cur_channel`), and SD synchronizer are pruned.<br>Outputs `o_rx_data_l`, `o_rx_data_r`, and `o_rx_valid` are tied to ground (`'0`). |
+
+### Usage in Verilog / Project Settings
+
+- **Full Duplex**: Instantiate `I2S_slave` directly with no macros.
+- **Synthesizing RX Only**: Add `+define+I2S_SLAVE_RX_ONLY` in your synthesis/simulation command or `` `define I2S_SLAVE_RX_ONLY `` in your project header.
+- **Synthesizing TX Only**: Add `+define+I2S_SLAVE_TX_ONLY` in your synthesis/simulation command or `` `define I2S_SLAVE_TX_ONLY `` in your project header.
+
+---
+
+## 5. Reference Documents
 - **Official Specification**: NXP Semiconductors User Manual **UM11732** (*I2S bus specification*, Rev. 3.0).
 - **Local Spec Copies**:
   - [`audio/I2S/UM11732.pdf`](../UM11732.pdf)
-  - [`audio/I2S/I2S_bus_specification.pdf`](../I2S_bus_specification.pdf)
+

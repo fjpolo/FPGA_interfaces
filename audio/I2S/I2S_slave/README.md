@@ -5,11 +5,15 @@ Parameterized digital audio transceiver core implementing the **Philips / NXP IÂ
 ---
 
 ## Features
-- **Full-Duplex Operation**: Independent Slave Receiver (RX) and Slave Transmitter (TX).
+- **Configurable Architecture (IFDEFs)**: Save FPGA LUTs and flip-flops when duplex operation is not required:
+  - **Full-Duplex** (Default): Complete simultaneous RX and TX transceiver.
+  - **`I2S_SLAVE_RX_ONLY`**: Receiver-only engine; TX logic is pruned and outputs are tied to ground.
+  - **`I2S_SLAVE_TX_ONLY`**: Transmitter-only engine; RX logic is pruned and outputs are tied to ground.
 - **Specification Compliant**: Strictly follows Philips I2S timing with the standard 1-SCK cycle delay between Word Select (`i_ws`) transitions and MSB transmission/reception.
 - **Robust Synchronization**: Multi-stage flip-flop synchronizers and glitch-free edge detection on external `i_sck` and `i_ws` clock inputs from the master.
+- **Modular Always Blocks**: Independent pipeline blocks for external synchronizers, host parallel handshakes, and serial shift engines.
 - **Parameterized Word Width**: Configurable `DATA_WIDTH` (16, 24, 32 bits, default 24).
-- **Clean Linting**: Fully verified with Verilator (`--lint-only --Wall --cc`) with zero warnings.
+- **Clean Linting**: Fully verified across all 3 build configurations with Verilator (`--lint-only --Wall --cc`) with zero warnings.
 
 For detailed specification compliance analysis and timing diagrams, see [SPECIFICATION.md](SPECIFICATION.md).
 
