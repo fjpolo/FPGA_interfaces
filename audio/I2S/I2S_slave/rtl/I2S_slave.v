@@ -186,12 +186,8 @@ module I2S_slave #(
             // Starting 2nd SCK cycle, transmit MSB down to LSB.
             // -----------------------------------------------------------------
             if (sck_fall) begin
-                if (tx_bit_cnt == {CNT_WIDTH{1'b0}}) begin
-                    // First cycle after WS edge: 1-cycle delay slot
-                    o_sd       <= 1'b0;
-                    tx_bit_cnt <= tx_bit_cnt + {{(CNT_WIDTH-1){1'b0}}, 1'b1};
-                end else if (tx_bit_cnt <= DATA_WIDTH_CONST) begin
-                    // Drive MSB of remaining shift register
+                if (tx_bit_cnt < DATA_WIDTH_CONST) begin
+                    // Drive MSB of remaining shift register (1 SCK period after WS edge)
                     o_sd         <= tx_shift_reg[DATA_WIDTH-1];
                     tx_shift_reg <= {tx_shift_reg[DATA_WIDTH-2:0], 1'b0};
                     tx_bit_cnt   <= tx_bit_cnt + {{(CNT_WIDTH-1){1'b0}}, 1'b1};
